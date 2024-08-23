@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class Participants {
+public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Participants {
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Events event;
+    private Event event;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

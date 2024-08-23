@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 
-public class Events {
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,13 +42,13 @@ public class Events {
     private Boolean is_featured;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participants> participants;
+    private List<Participant> participants;
     
-    public void getFeaturedList() {
-        return List<Events> featuredEvents;
-    }
+    // public void getFeaturedList() {
+    //     return List<Events> featuredEvents;
+    // }
 
-    public List<Events> getAllEvents() {
-        return List<Events> allEvents;
-    }
+    // public List<Events> getAllEvents() {
+    //     return List<Events> allEvents;
+    // }
 }
