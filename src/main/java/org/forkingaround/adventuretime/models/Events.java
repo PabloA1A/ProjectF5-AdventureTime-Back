@@ -44,11 +44,11 @@ public class Events {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participants> participants;
     
-    // public void getFeaturedList() {
-    //     return List<Events> featuredEvents;
-    // }
+    public void getFeaturedList() {
+        return List<Events> featuredEvents;
+    }
 
-    // public void getAllEvents() {
-    //     return List<Events> allEvents;
-    // }
+    public List<Events> getAllEvents() {
+        return List<Events> allEvents;
+    }
 }
