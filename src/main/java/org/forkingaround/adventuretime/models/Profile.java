@@ -23,7 +23,7 @@ public class Profile {
     private String address;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id_user")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
 /*     @ManyToOne

@@ -18,10 +18,10 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(nullable = false)
-    private Long event_id;
-    @Column(nullable = false)
-    private Long user_id;
+    // @Column(nullable = false)
+    // private Long event_id;
+    // @Column(nullable = false)
+    // private Long user_id;
     @Column(nullable = false)
     private LocalDateTime joined_at;
 
