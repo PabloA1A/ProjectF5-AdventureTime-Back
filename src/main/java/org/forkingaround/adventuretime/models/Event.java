@@ -21,25 +21,25 @@ public class Event {
     public Long id;
 
     @Column(nullable = false)
-    private String tittle;
+    private String title;
 
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private String image_url;
+    @Column(name = "image_url", nullable = false)
+    private String imageUrl;
 
-    @Column(nullable = false)
-    private LocalDateTime event_datetime;
+    @Column(name = "event_datetime", nullable = false)
+    private LocalDateTime eventDateTime;
 
-    @Column(nullable = false)
-    private Integer max_participants;
+    @Column(name = "max_participants", nullable = false)
+    private int maxParticipants;
 
-    @Column(nullable = false)
-    private Boolean is_available;
+    @Column(name = "is_available", nullable = false)
+    private Boolean isAvailable;
 
-    @Column(nullable = false)
-    private Boolean is_featured;
+    @Column(name = "is_featured", nullable = false)
+    private Boolean isFeatured;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants;

@@ -18,12 +18,8 @@ public class Participant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    // @Column(nullable = false)
-    // private Long event_id;
-    // @Column(nullable = false)
-    // private Long user_id;
-    @Column(nullable = false)
-    private LocalDateTime joined_at;
+    @Column(name = "joined_at", nullable = false)
+    private LocalDateTime joinedAt;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
