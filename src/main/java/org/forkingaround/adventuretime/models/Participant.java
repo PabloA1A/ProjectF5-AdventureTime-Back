@@ -12,26 +12,22 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class Participants {
+public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @Column(nullable = false)
-    private Long event_id;
-    @Column(nullable = false)
-    private Long user_id;
-    @Column(nullable = false)
-    private LocalDateTime joined_at;
+    @Column(name = "joined_at", nullable = false)
+    private LocalDateTime joinedAt;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    private Events event;
+    private Event event;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     
 }
