@@ -10,6 +10,7 @@ import org.forkingaround.adventuretime.dtos.EventRequest;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
+import org.forkingaround.adventuretime.models.Participant;
 import org.forkingaround.adventuretime.repositories.EventRepository;
 
 @Service
@@ -20,6 +21,11 @@ public class EventService {
 
     public List<Event> getAllEvents() {
         List<Event> events = eventRepository.findAll();
+      
+        for (Event event : events) {
+           List<Participant> participants = eventRepository.getParticipantsByEventId(event.getId());
+           event.setParticipantsCount(participants.size());
+        }
         if (events.isEmpty()) {
             throw new EventNotFoundException("No events found");
         }

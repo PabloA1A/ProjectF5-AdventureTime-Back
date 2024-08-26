@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "events")
 @Data
@@ -43,7 +45,14 @@ public class Event {
     @Column(name = "is_featured", nullable = false)
     private Boolean isFeatured;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
+    private int participantsCount;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Participant> participants;
-    
+
+    public int getParticipantsCount() {
+        return (participants != null) ? participants.size() : 0;
+    }
 }
