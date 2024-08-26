@@ -36,22 +36,22 @@ public class EventController {
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<Event>> getFeaturedEvents() {
-        List<Event> featuredEvents = eventService.getFeaturedEvents();
+    public ResponseEntity<List<EventDto>> getFeaturedEvents() {
+        List<EventDto> featuredEvents = eventService.getFeaturedEvents();
         return ResponseEntity.ok(featuredEvents);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        Optional<Event> event = eventService.getEventById(id);
+    public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
+        Optional<EventDto> event = eventService.getEventById(id);
         return event.map(ResponseEntity::ok)
                 .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addEvent(@RequestBody EventDto eventRequest) {
+    public ResponseEntity<String> addEvent(@RequestBody EventDto eventDto) {
         try {
-            Event addEvent = eventService.addEvent(eventRequest);
+            Event addEvent = eventService.addEvent(eventDto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Event added successfully with id: " + addEvent.getId());
         } catch (EventException e) {
@@ -60,9 +60,9 @@ public class EventController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody EventDto eventRequest) {
+    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
         try {
-            eventService.updateEvent(id, eventRequest);
+            eventService.updateEvent(id, eventDto);
             return ResponseEntity.ok("Event updated successfully");
         } catch (EventNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found: " + e.getMessage());

@@ -19,11 +19,6 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public List<EventDto> getAllEvents() {
-        return eventRepository.findAll().stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
-    }
     private EventDto convertToDto(Event event) {
         return new EventDto(
             event.getId(),
@@ -37,22 +32,23 @@ public class EventService {
             event.getParticipants().size() 
         );
     }
+
+    public List<EventDto> getAllEvents() {
+        return eventRepository.findAll().stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+    }
     
 
-    public List<Event> getFeaturedEvents() {
-        List<Event> featuredEvents = eventRepository.findByIsFeaturedTrue();
-        if (featuredEvents.isEmpty()) {
-            throw new EventNotFoundException("No featured events found");
-        }
-        return featuredEvents;
+    public List<EventDto> getFeaturedEvents() {
+        return eventRepository.findByIsFeaturedTrue().stream()
+       .map(this::convertToDto)
+       .collect(Collectors.toList());
     }
 
-    public Optional<Event> getEventById(Long id) {
-        Optional<Event> event = eventRepository.findById(id);
-        if (event.isEmpty()) {
-            throw new EventNotFoundException("Event with id " + id + " not found");
-        }
-        return event;
+    public Optional<EventDto> getEventById(Long id) {
+
+      return eventRepository.findById(id).map(this::convertToDto);
     }
 
     public Event addEvent(EventDto eventDto) {
@@ -63,8 +59,11 @@ public class EventService {
         Event newEvent = new Event();
         newEvent.setTitle(eventDto.getTitle());
         newEvent.setDescription(eventDto.getDescription());
+        newEvent.setImageUrl(eventDto.getImageUrl());
         newEvent.setEventDateTime(eventDto.getEventDateTime());
+        newEvent.setMaxParticipants(eventDto.getMaxParticipants());
         newEvent.setIsFeatured(eventDto.getIsFeatured());
+        newEvent.setIsAvailable(eventDto.getIsAvailable());
 
         return eventRepository.save(newEvent);
     }
@@ -75,8 +74,11 @@ public class EventService {
 
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
+        event.setImageUrl(eventDto.getImageUrl());
         event.setEventDateTime(eventDto.getEventDateTime());
+        event.setMaxParticipants(eventDto.getMaxParticipants());
         event.setIsFeatured(eventDto.getIsFeatured());
+        event.setIsAvailable(eventDto.getIsAvailable());
 
         return eventRepository.save(event);
     }
