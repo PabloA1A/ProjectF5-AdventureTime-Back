@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.forkingaround.adventuretime.dtos.EventRequest;
+import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
-import org.forkingaround.adventuretime.models.Participant;
 import org.forkingaround.adventuretime.repositories.EventRepository;
 
 @Service
@@ -19,18 +19,25 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public List<Event> getAllEvents() {
-        List<Event> events = eventRepository.findAll();
-      
-        for (Event event : events) {
-           List<Participant> participants = eventRepository.getParticipantsByEventId(event.getId());
-           event.setParticipantsCount(participants.size());
-        }
-        if (events.isEmpty()) {
-            throw new EventNotFoundException("No events found");
-        }
-        return events;
+    public List<EventDto> getAllEvents() {
+        return eventRepository.findAll().stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
     }
+    private EventDto convertToDto(Event event) {
+        return new EventDto(
+            event.getId(),
+            event.getTitle(),
+            event.getDescription(),
+            event.getImageUrl(),
+            event.getEventDateTime(),
+            event.getMaxParticipants(),
+            event.getIsAvailable(),
+            event.getIsFeatured(),
+            event.getParticipants().size() 
+        );
+    }
+    
 
     public List<Event> getFeaturedEvents() {
         List<Event> featuredEvents = eventRepository.findByIsFeaturedTrue();
@@ -48,28 +55,28 @@ public class EventService {
         return event;
     }
 
-    public Event addEvent(EventRequest eventRequest) {
-        if (eventRequest.getTitle() == null || eventRequest.getTitle().isEmpty()) {
+    public Event addEvent(EventDto eventDto) {
+        if (eventDto.getTitle() == null || eventDto.getTitle().isEmpty()) {
             throw new EventException("Event title cannot be null or empty");
         }
 
         Event newEvent = new Event();
-        newEvent.setTitle(eventRequest.getTitle());
-        newEvent.setDescription(eventRequest.getDescription());
-        newEvent.setEventDateTime(eventRequest.getEventDateTime());
-        newEvent.setIsFeatured(eventRequest.getIsFeatured());
+        newEvent.setTitle(eventDto.getTitle());
+        newEvent.setDescription(eventDto.getDescription());
+        newEvent.setEventDateTime(eventDto.getEventDateTime());
+        newEvent.setIsFeatured(eventDto.getIsFeatured());
 
         return eventRepository.save(newEvent);
     }
 
-    public Event updateEvent(Long id, EventRequest eventRequest) {
+    public Event updateEvent(Long id, EventDto eventDto) {
         Event event = eventRepository.findById(id)
             .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
 
-        event.setTitle(eventRequest.getTitle());
-        event.setDescription(eventRequest.getDescription());
-        event.setEventDateTime(eventRequest.getEventDateTime());
-        event.setIsFeatured(eventRequest.getIsFeatured());
+        event.setTitle(eventDto.getTitle());
+        event.setDescription(eventDto.getDescription());
+        event.setEventDateTime(eventDto.getEventDateTime());
+        event.setIsFeatured(eventDto.getIsFeatured());
 
         return eventRepository.save(event);
     }

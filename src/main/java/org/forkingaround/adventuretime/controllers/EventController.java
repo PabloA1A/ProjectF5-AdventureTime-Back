@@ -3,7 +3,7 @@ package org.forkingaround.adventuretime.controllers;
 import java.util.List;
 import java.util.Optional;
 
-import org.forkingaround.adventuretime.dtos.EventRequest;
+import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
@@ -30,8 +30,8 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventService.getAllEvents();
+    public ResponseEntity<List<EventDto>> getAllEvents() {
+        List<EventDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
 
@@ -49,7 +49,7 @@ public class EventController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addEvent(@RequestBody EventRequest eventRequest) {
+    public ResponseEntity<String> addEvent(@RequestBody EventDto eventRequest) {
         try {
             Event addEvent = eventService.addEvent(eventRequest);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,7 +60,7 @@ public class EventController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody EventRequest eventRequest) {
+    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody EventDto eventRequest) {
         try {
             eventService.updateEvent(id, eventRequest);
             return ResponseEntity.ok("Event updated successfully");

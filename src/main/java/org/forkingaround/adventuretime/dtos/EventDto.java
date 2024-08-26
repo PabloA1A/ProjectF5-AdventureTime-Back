@@ -2,10 +2,13 @@ package org.forkingaround.adventuretime.dtos;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class EventRequest {
+@AllArgsConstructor
+public class EventDto {
+    private Long id;
     private String title;
     private String description;
     private String imageUrl;
@@ -13,4 +16,5 @@ public class EventRequest {
     private int maxParticipants;
     private Boolean isAvailable;
     private Boolean isFeatured;
+    private int participantsCount;
 }
