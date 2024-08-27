@@ -3,8 +3,10 @@ package org.forkingaround.adventuretime.controllers;
 
 
 import org.forkingaround.adventuretime.dtos.UserDto;
+import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.services.RegisterService;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +24,9 @@ public class RegisterController {
     }
 
     @PostMapping
-    public String register(@RequestBody UserDto newUser) {
-        System.out.println(newUser.getUsername());
-        return service.save(newUser);
+    public ResponseEntity<?> register(@RequestBody UserDto newUser) {
+        User user = service.save(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 }
 

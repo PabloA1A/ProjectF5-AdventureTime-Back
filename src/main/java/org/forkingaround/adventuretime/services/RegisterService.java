@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
             this.encoderFacade = encoderFacade;
         }
     
-        public String save(UserDto newUserDto) {
+        public User save(UserDto newUserDto) {
     
             String passwordDecoded = encoderFacade.decode("base64", newUserDto.getPassword());
             String passwordEncoded = encoderFacade.encode("bcrypt",  passwordDecoded);
@@ -33,9 +33,8 @@ import org.springframework.stereotype.Service;
             User user = new User(newUserDto.getUsername(), passwordEncoded);
             user.setRoles(assignDefaultRole());
     
-            repository.save(user);
-    
-            return "Success";
+            return repository.save(user);
+
         }
     
         public Set<Role> assignDefaultRole() {
