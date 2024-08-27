@@ -2,6 +2,9 @@ package org.forkingaround.adventuretime.controllers;
 
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.forkingaround.adventuretime.dtos.UserDto;
 import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.services.RegisterService;
@@ -24,9 +27,13 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<?> register(@RequestBody UserDto newUser) {
+    public ResponseEntity<Map<String, String>> register(@RequestBody UserDto newUser) {
+
         User user = service.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        Map<String, String> json = new HashMap<>();
+        json.put("message", "Register");
+        json.put("username", user.getUsername());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(json);
     }
 }
-
