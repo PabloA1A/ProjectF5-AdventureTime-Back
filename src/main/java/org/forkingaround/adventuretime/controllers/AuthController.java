@@ -25,8 +25,8 @@ public class AuthController {
         Map<String,String> json = new HashMap<>();
         json.put("message", "Logged");
         json.put("username", auth.getName());
-        json.put("roles", auth.getAuthorities().iterator().next().toString());
+        json.put("roles", auth.getAuthorities().iterator().next().getAuthority());
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(json);
+        return ResponseEntity.status(HttpStatus.OK).body(json);
     }
 }
