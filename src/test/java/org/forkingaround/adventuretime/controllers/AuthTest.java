@@ -108,5 +108,37 @@ public class AuthTest {
         assertThat(response.getStatus(), is(204));
     }
 
+    @Test
+    void testUserUnauthenticated() throws Exception {
+        MockHttpServletResponse response = mockMvc.perform(get("/api/v1/login"))
+                .andExpect(unauthenticated())
+                .andReturn()
+                .getResponse();
 
+        assertThat(response.getStatus(), is(HttpStatus.UNAUTHORIZED.value()));
+    }
+
+    @Test
+    void testUserCanLogin() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/api/v1/login").with(user("Javier").password("password").roles("ADMIN")))
+                .andExpect(authenticated())
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus(), is(HttpStatus.OK.value()));
+        assertThat(response.getContentAsString(), containsString("Logged"));
+    }
+
+    @Test
+    void testBasicAuth() throws Exception {
+        MockHttpServletResponse response = mockMvc
+                .perform(get("/api/v1/login").with(user("Javier").password("password").roles("USER")))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getContentAsString(),
+                is("{\"roles\":\"ROLE_USER\",\"message\":\"Logged\",\"username\":\"Javier\"}"));
+    }
 }
