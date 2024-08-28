@@ -64,5 +64,21 @@ public class AuthTest {
                 .getResponse();
     }
 
+    @Test
+    void testAllCanAccessPathGetAllEvent() throws Exception {
+        mockMvc.perform(get("/api/v1/home/allevent"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+    }
+
+    @Test
+    void testAllCanAccessPathGetAllEventFeatured() throws Exception {
+        mockMvc.perform(get("/api/v1/home/eventfeatured"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+    }
+
 
 }
