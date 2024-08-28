@@ -98,5 +98,15 @@ public class AuthTest {
                 .getResponse();
     }
 
+    @Test
+    void testLogout() throws Exception {
+        MockHttpServletResponse response = mockMvc.perform(get("/api/v1/logout"))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus(), is(204));
+    }
+
 
 }
