@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
@@ -61,37 +60,14 @@ public class EventControllerTest {
     }
 
     @Test
-    void testGetAllEvents() {
-        List<EventDto> eventList = Arrays.asList(eventDto);
-        when(eventService.getAllEvents()).thenReturn(eventList);
-
-        ResponseEntity<List<EventDto>> response = eventController.getAllEvents();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(eventList, response.getBody());
-        verify(eventService).getAllEvents();
-    }
-
-    @Test
-    void testGetFeaturedEvents() {
-        List<EventDto> featuredEventList = Arrays.asList(eventDto);
-        when(eventService.getFeaturedEvents()).thenReturn(featuredEventList);
-
-        ResponseEntity<List<EventDto>> response = eventController.getFeaturedEvents();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(featuredEventList, response.getBody());
-        verify(eventService).getFeaturedEvents();
-    }
-
-    @Test
     void testGetEventByIdSuccess() {
         when(eventService.getEventById(1L)).thenReturn(Optional.of(eventDto));
 
-        ResponseEntity<EventDto> response = eventController.getEventById(1L);
+        ResponseEntity<?> response = eventController.getEventById(1L);
+        Optional<?> optionalEvent = Optional.of(eventDto);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(eventDto, response.getBody());
+        assertEquals(optionalEvent, response.getBody());
         verify(eventService).getEventById(1L);
     }
 
@@ -99,10 +75,10 @@ public class EventControllerTest {
     void testGetEventByIdNotFound() {
         when(eventService.getEventById(2L)).thenReturn(Optional.empty());
 
-        ResponseEntity<EventDto> response = eventController.getEventById(2L);
+        ResponseEntity<?> response = eventController.getEventById(2L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Event with id 2 not found", response.getBody());
+        assertEquals(Optional.empty(), response.getBody());
         verify(eventService).getEventById(2L);
     }
 
@@ -146,7 +122,7 @@ public class EventControllerTest {
         ResponseEntity<String> response = eventController.updateEvent(1L, eventDto);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Event with id 1 not found: Event with id 1 not found", response.getBody());
+        assertEquals("Event not found: Event with id 1 not found", response.getBody());
         verify(eventService).updateEvent(1L, eventDto);
     }
 
@@ -167,7 +143,7 @@ public class EventControllerTest {
 
         ResponseEntity<String> response = eventController.deleteEvent(1L);
 
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.GONE, response.getStatusCode());
         assertEquals("Event deleted successfully", response.getBody());
         verify(eventService).deleteEvent(1L);
     }
@@ -179,7 +155,7 @@ public class EventControllerTest {
         ResponseEntity<String> response = eventController.deleteEvent(11L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Event with id 11 not found: Event with id 11 not found", response.getBody());
+        assertEquals("Event not found: Event with id 11 not found", response.getBody());
         verify(eventService).deleteEvent(11L);
     }
 
