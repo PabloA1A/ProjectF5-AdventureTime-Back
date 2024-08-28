@@ -1,6 +1,5 @@
 package org.forkingaround.adventuretime.controllers;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
@@ -11,7 +10,6 @@ import org.forkingaround.adventuretime.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,30 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "${api-endpoint}/event")
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 public class EventController {
 
     @Autowired
     private EventService eventService;
-
-    @GetMapping("/all")
-    public ResponseEntity<List<EventDto>> getAllEvents() {
-        List<EventDto> events = eventService.getAllEvents();
-        return ResponseEntity.ok(events);
-    }
-
-    @GetMapping("/featured")
-    public ResponseEntity<List<EventDto>> getFeaturedEvents() {
-        List<EventDto> featuredEvents = eventService.getFeaturedEvents();
-        return ResponseEntity.ok(featuredEvents);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
-        Optional<EventDto> event = eventService.getEventById(id);
-        return event.map(ResponseEntity::ok)
-                .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
-    }
 
     @PostMapping("/add")
     public ResponseEntity<String> addEvent(@RequestBody EventDto eventDto) {
@@ -75,13 +53,22 @@ public class EventController {
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         try {
             eventService.deleteEvent(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(HttpStatus.GONE).body("Event deleted successfully");
         } catch (EventNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found: " + e.getMessage());
         } catch (EventException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while deleting the event: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<EventDto>> getEventById(@PathVariable Long id) {
+        Optional<EventDto> event = eventService.getEventById(id);
+        if (!event.isEmpty())
+            return ResponseEntity.status(HttpStatus.OK).body(event);
+        else
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(event);
     }
 
 }
