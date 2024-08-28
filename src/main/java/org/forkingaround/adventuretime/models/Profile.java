@@ -9,9 +9,17 @@ import jakarta.persistence.JoinColumn;
 //import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "profiles")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Profile {
 
     @Id
@@ -25,52 +33,5 @@ public class Profile {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
-
-/*     @ManyToOne
-    @JoinColumn(name = "country_id", nullable = true)
-    private Country country; */
-
-    public Profile() {
-    }
-
-   // public Profile(String email, String address, User user, Country country) {
-    public Profile(String email, String address, User user) {
-        this.email = email;
-        this.address = address;
-        this.user = user;
-       // this.country = country;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    // public Country getCountry() {
-    //     return country;
-    // }
-
-    // public void setCountry(Country country) {
-    //     this.country = country;
-    // }
 
 }
