@@ -80,5 +80,23 @@ public class AuthTest {
                 .getResponse();
     }
 
+    @Test
+    @WithMockUser(roles = "USER")
+    void testRoleUserCanNotAccessPathSetEvent() throws Exception {
+        mockMvc.perform(get("/api/v1/event/add"))
+                .andExpect(status().isForbidden())
+                .andReturn()
+                .getResponse();
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void testRoleAdminCanAccessPathSetEvent() throws Exception {
+        mockMvc.perform(get("/api/v1/event/add"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+    }
+
 
 }
