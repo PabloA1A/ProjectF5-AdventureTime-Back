@@ -56,5 +56,13 @@ public class AuthTest {
                 is("{\"roles\":\"ROLE_USER\",\"message\":\"Logged\",\"username\":\"user\"}"));
     }
 
+    @Test
+    void testAllCanAccessPathRegister() throws Exception {
+        mockMvc.perform(post("/api/v1/register"))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse();
+    }
+
 
 }
