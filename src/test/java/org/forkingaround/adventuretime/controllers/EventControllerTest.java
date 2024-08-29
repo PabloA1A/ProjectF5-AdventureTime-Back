@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.List;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
@@ -57,6 +58,30 @@ public class EventControllerTest {
         event.setIsAvailable(true);
         event.setIsFeatured(false);
         event.setParticipants(Arrays.asList());
+    }
+
+    @Test
+    void testGetAllEvents() {
+        List<EventDto> eventList = Arrays.asList(eventDto);
+        when(eventService.getAllEvents()).thenReturn(eventList);
+
+        ResponseEntity<List<EventDto>> response = eventController.getAllEvents();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(eventList, response.getBody());
+        verify(eventService).getAllEvents();
+    }
+
+    @Test
+    void testGetFeaturedEvents() {
+        List<EventDto> featuredEventList = Arrays.asList(eventDto);
+        when(eventService.getFeaturedEvents()).thenReturn(featuredEventList);
+
+        ResponseEntity<List<EventDto>> response = eventController.getFeaturedEvents();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(featuredEventList, response.getBody());
+        verify(eventService).getFeaturedEvents();
     }
 
     @Test
