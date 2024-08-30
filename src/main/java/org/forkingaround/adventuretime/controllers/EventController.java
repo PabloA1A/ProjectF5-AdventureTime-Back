@@ -27,13 +27,13 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @GetMapping("/allevent")
+    @GetMapping("/all")
     public ResponseEntity<List<EventDto>> getAllEvents() {
         List<EventDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/eventfeatured")
+    @GetMapping("/featured")
     public ResponseEntity<List<EventDto>> getFeaturedEvents() {
         List<EventDto> featuredEvents = eventService.getFeaturedEvents();
         return ResponseEntity.ok(featuredEvents);
