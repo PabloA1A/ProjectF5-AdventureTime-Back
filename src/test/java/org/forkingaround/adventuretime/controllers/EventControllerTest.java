@@ -168,8 +168,8 @@ public class EventControllerTest {
 
         ResponseEntity<String> response = eventController.deleteEvent(1L);
 
-        assertEquals(HttpStatus.GONE, response.getStatusCode());
-        assertEquals("Event deleted successfully", response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(null, response.getBody());
         verify(eventService).deleteEvent(1L);
     }
 
