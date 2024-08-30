@@ -66,7 +66,7 @@ public class EventController {
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
         try {
             eventService.deleteEvent(id);
-            return ResponseEntity.status(HttpStatus.GONE).body("Event deleted successfully");
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (EventNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found: " + e.getMessage());
         } catch (EventException e) {
