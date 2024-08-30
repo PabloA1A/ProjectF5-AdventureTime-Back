@@ -1,6 +1,7 @@
 package org.forkingaround.adventuretime.controllers;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
@@ -26,6 +27,18 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    @GetMapping("/all")
+    public ResponseEntity<List<EventDto>> getAllEvents() {
+        List<EventDto> events = eventService.getAllEvents();
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/featured")
+    public ResponseEntity<List<EventDto>> getFeaturedEvents() {
+        List<EventDto> featuredEvents = eventService.getFeaturedEvents();
+        return ResponseEntity.ok(featuredEvents);
+    }
+    
     @PostMapping("/add")
     public ResponseEntity<String> addEvent(@RequestBody EventDto eventDto) {
         try {
