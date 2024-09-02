@@ -11,14 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "${api-endpoint}/event")
+@RequestMapping(path = "${api-endpoint}/events")
 public class ParticipantController {
 
     @Autowired
     private ParticipantService participantService;
 
     
-    @GetMapping("/{eventId}/participant/all")
+    @GetMapping("/participant/all")
     public ResponseEntity<List<ParticipantDto>> getAllParticipants() {
         try {
             List<ParticipantDto> participants = participantService.getAllParticipants();
@@ -38,16 +38,7 @@ public class ParticipantController {
         }
     }
     
-    @PostMapping("/{eventId}/participant/add")
-    public ResponseEntity<ParticipantDto> addParticipant(@RequestBody ParticipantDto participantDto) {
-        try {
-            ParticipantDto savedParticipant = participantService.addParticipant(participantDto);
-            return ResponseEntity.ok(savedParticipant);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
+    
     @PostMapping("/{eventId}/participant/join/{userId}")
     public ResponseEntity<String> joinEvent(@PathVariable Long eventId, @PathVariable Long userId) {
         try {
@@ -55,14 +46,15 @@ public class ParticipantController {
             if (isJoined) {
                 return ResponseEntity.ok("Joined successfully");
             } else {
-                return ResponseEntity.status(406).body("Joining not possible");
+                return ResponseEntity.status(406).body("Joining not possible: already registered");
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("An error occurred: " + e.getMessage());
         }
     }
-
-    @DeleteMapping("/{eventId}/participants/{participantId}")
+    
+    
+    @DeleteMapping("/{eventId}/participant/{participantId}")
     public ResponseEntity<String> deleteParticipant(@PathVariable Long eventId, @PathVariable Long participantId) {
         try {
             participantService.deleteParticipant(eventId, participantId);
@@ -71,7 +63,18 @@ public class ParticipantController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Participant not found: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting the participant: " + e.getMessage());
+            .body("An error occurred while deleting the participant: " + e.getMessage());
         }
     }
+
+
+    // @PostMapping("/{eventId}/participant/add")
+    // public ResponseEntity<ParticipantDto> addParticipant(@RequestBody ParticipantDto participantDto) {
+    //     try {
+    //         ParticipantDto savedParticipant = participantService.addParticipant(participantDto);
+    //         return ResponseEntity.ok(savedParticipant);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.badRequest().body(null);
+    //     }
+    // }
 }

@@ -63,6 +63,11 @@ public class ParticipantService {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (eventOptional.isPresent() && userOptional.isPresent()) {
+            boolean isAlreadyRegistered = participantRepository.findByEventIdAndUserId(eventId, userId).isPresent();
+            if (isAlreadyRegistered) {
+                return false; 
+            }
+
             Participant participant = new Participant();
             participant.setEvent(eventOptional.get());
             participant.setUser(userOptional.get());

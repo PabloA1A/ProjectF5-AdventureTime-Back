@@ -53,6 +53,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, endpoint + "/event").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, endpoint + "/event").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, endpoint + "/event").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, endpoint + "/events").hasAnyRole("USER","ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, endpoint + "/events").hasAnyRole("USER","ADMIN")
+                                .requestMatchers(HttpMethod.GET, endpoint + "/events/**").hasRole("ADMIN")
+        
                                 .anyRequest().authenticated())
                         .userDetailsService(jpaUserDetailsService)
                         .httpBasic(basic -> basic.authenticationEntryPoint(myBasicAuthenticationEntryPoint))
