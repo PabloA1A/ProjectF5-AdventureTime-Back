@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.dtos.ParticipantDto;
 import org.forkingaround.adventuretime.exceptions.ParticipantNotFoundException;
+import org.forkingaround.adventuretime.services.EmailService;
 import org.forkingaround.adventuretime.services.EventService;
 import org.forkingaround.adventuretime.services.ParticipantService;
+import org.forkingaround.adventuretime.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,12 @@ public class ParticipantController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ProfileService profileService;
 
     @GetMapping("/all")
     public ResponseEntity<List<ParticipantDto>> getAllParticipants() {
@@ -48,7 +56,18 @@ public class ParticipantController {
         try {
             boolean isJoined = participantService.joinEvent(eventId, userId);
             if (isJoined) {
+                Optional<EventDto> eventOptional = eventService.getEventById(eventId);
+                String userEmail = profileService.getEmailByUserId(userId);
+
+                if (eventOptional.isPresent() && userEmail != null) {
+                    String evenTitle = eventOptional.get().getTitle();
+                    String subject = "Joined to the event: " + evenTitle;
+                    String text = "Succesfully joined to the event: " + evenTitle;
+
+                    emailService.sendEmail(userEmail, subject, text);
+                }
                 return ResponseEntity.ok("Joined successfully");
+
             } else {
                 Optional<EventDto> eventOptional = eventService.getEventById(eventId);
                 if (eventOptional.isPresent()
@@ -90,15 +109,4 @@ public class ParticipantController {
         }
     }
 
-    // @PostMapping("/{eventId}/participant/add")
-    // public ResponseEntity<ParticipantDto> addParticipant(@RequestBody
-    // ParticipantDto participantDto) {
-    // try {
-    // ParticipantDto savedParticipant =
-    // participantService.addParticipant(participantDto);
-    // return ResponseEntity.ok(savedParticipant);
-    // } catch (Exception e) {
-    // return ResponseEntity.badRequest().body(null);
-    // }
-    // }
 }
