@@ -3,7 +3,7 @@ package org.forkingaround.adventuretime.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.forkingaround.adventuretime.dtos.UserDto;
+import org.forkingaround.adventuretime.dtos.RegisterDto;
 import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.services.RegisterService;
 import org.springframework.http.HttpStatus;
@@ -26,15 +26,12 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody UserDto newUser) {
+    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody RegisterDto newUser) {
         User user = service.save(newUser);
 
         Map<String, String> json = new HashMap<>();
         json.put("message", "Register successful");
         json.put("username", user.getUsername());
-
-        String email = user.getProfile() != null ? user.getProfile().getEmail() : "No email found";
-        json.put("email", email);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(json);
     }

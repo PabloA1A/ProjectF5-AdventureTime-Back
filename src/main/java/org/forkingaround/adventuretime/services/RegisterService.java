@@ -3,7 +3,7 @@ package org.forkingaround.adventuretime.services;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.forkingaround.adventuretime.dtos.UserDto;
+import org.forkingaround.adventuretime.dtos.RegisterDto;
 import org.forkingaround.adventuretime.facades.EncoderFacade;
 import org.forkingaround.adventuretime.implementations.IEncryptFacade;
 import org.forkingaround.adventuretime.models.Role;
@@ -27,20 +27,16 @@ public class RegisterService {
         this.encoderFacade = encoderFacade;
     }
 
-    public User save(UserDto newUserDto) {
-        // Decodificar y codificar la contraseña
-        String passwordDecoded = encoderFacade.decode("base64", newUserDto.getPassword());
+    public User save(RegisterDto newRegisterDto) {
+        String passwordDecoded = encoderFacade.decode("base64", newRegisterDto.getPassword());
         String passwordEncoded = encoderFacade.encode("bcrypt", passwordDecoded);
 
-        // Crear el usuario sin email (el email se maneja en Profile)
-        User user = new User(newUserDto.getUsername(), passwordEncoded);
+        User user = new User(newRegisterDto.getUsername(), passwordEncoded);
         user.setRoles(assignDefaultRole());
 
-        // Guardar el usuario en la base de datos
         User savedUser = userRepository.save(user);
 
-        // Crear y asociar el perfil con el usuario
-        Profile profile = new Profile(newUserDto.getEmail(), savedUser);
+        Profile profile = new Profile(newRegisterDto.getEmail(), savedUser);
         profileService.save(profile);
 
         return savedUser;
