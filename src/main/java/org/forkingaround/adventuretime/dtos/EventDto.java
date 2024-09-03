@@ -1,6 +1,7 @@
 package org.forkingaround.adventuretime.dtos;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,4 +18,5 @@ public class EventDto {
     private Boolean isAvailable;
     private Boolean isFeatured;
     private int participantsCount;
+    private List<ParticipantDto> participants;
 }

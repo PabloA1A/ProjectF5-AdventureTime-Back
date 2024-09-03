@@ -8,47 +8,56 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
+import org.forkingaround.adventuretime.dtos.ParticipantDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
+import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.repositories.EventRepository;
 
 @Service
-@RequiredArgsConstructor  
+@RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
 
     private EventDto convertToDto(Event event) {
+
+        List<ParticipantDto> participantDtos = event.getParticipants().stream()
+                .map(participant -> {
+                    User user = participant.getUser();
+                    return new ParticipantDto(participant.getId(), user != null ? user.getUsername() : null);
+                })
+                .collect(Collectors.toList());
+
         return new EventDto(
-            event.getId(),
-            event.getTitle(),
-            event.getDescription(),
-            event.getImageUrl(),
-            event.getEventDateTime(),
-            event.getMaxParticipants(),
-            event.getIsAvailable(),
-            event.getIsFeatured(),
-            event.getParticipants().size() 
-        );
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getImageUrl(),
+                event.getEventDateTime(),
+                event.getMaxParticipants(),
+                event.getIsAvailable(),
+                event.getIsFeatured(),
+                event.getParticipants().size(),
+                participantDtos);
     }
 
     public List<EventDto> getAllEvents() {
         return eventRepository.findAll().stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
-    
 
     public List<EventDto> getFeaturedEvents() {
         return eventRepository.findByIsFeaturedTrue().stream()
-       .map(this::convertToDto)
-       .collect(Collectors.toList());
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     public Optional<EventDto> getEventById(Long id) {
 
-      return eventRepository.findById(id).map(this::convertToDto);
+        return eventRepository.findById(id).map(this::convertToDto);
     }
 
     public Event addEvent(EventDto eventDto) {
@@ -70,7 +79,7 @@ public class EventService {
 
     public Event updateEvent(Long id, EventDto eventDto) {
         Event event = eventRepository.findById(id)
-            .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
 
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
@@ -85,7 +94,7 @@ public class EventService {
 
     public void deleteEvent(Long id) {
         Event event = eventRepository.findById(id)
-            .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
+                .orElseThrow(() -> new EventNotFoundException("Event with id " + id + " not found"));
 
         eventRepository.delete(event);
     }
