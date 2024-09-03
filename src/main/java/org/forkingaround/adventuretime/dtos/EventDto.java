@@ -18,5 +18,5 @@ public class EventDto {
     private Boolean isAvailable;
     private Boolean isFeatured;
     private int participantsCount;
-    private List<ParticipantDto> participants;
+    private List<SubscribeDto> participants;
 }

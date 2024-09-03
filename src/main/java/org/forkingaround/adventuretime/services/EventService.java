@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
-import org.forkingaround.adventuretime.dtos.ParticipantDto;
+import org.forkingaround.adventuretime.dtos.SubscribeDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
@@ -23,10 +23,10 @@ public class EventService {
 
     private EventDto convertToDto(Event event) {
 
-        List<ParticipantDto> participantDtos = event.getParticipants().stream()
+        List<SubscribeDto> SubscribeDto = event.getParticipants().stream()
                 .map(participant -> {
                     User user = participant.getUser();
-                    return new ParticipantDto(participant.getId(), user != null ? user.getUsername() : null);
+                    return new SubscribeDto(participant.getId(), user != null ? user.getUsername() : null);
                 })
                 .collect(Collectors.toList());
 
@@ -40,7 +40,7 @@ public class EventService {
                 event.getIsAvailable(),
                 event.getIsFeatured(),
                 event.getParticipants().size(),
-                participantDtos);
+                SubscribeDto);
     }
 
     public List<EventDto> getAllEvents() {
