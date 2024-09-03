@@ -1,5 +1,7 @@
 package org.forkingaround.adventuretime.services;
 
+import java.util.Optional;
+
 import org.forkingaround.adventuretime.models.Profile;
 import org.forkingaround.adventuretime.repositories.ProfileRepository;
 import org.springframework.stereotype.Service;
@@ -16,5 +18,15 @@ public class ProfileService {
     public Profile save(Profile profile) {
         return profileRepository.save(profile);
     }
+
+    public String getEmailByUserId(Long userId) {
+        Optional<Profile> profileOptional = profileRepository.findById(userId);
+        if (profileOptional.isPresent()) {
+            return profileOptional.get().getEmail();
+        }
+
+        return null;
+    }
+        
 
 }
