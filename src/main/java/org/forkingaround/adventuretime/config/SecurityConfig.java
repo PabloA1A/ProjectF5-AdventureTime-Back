@@ -34,27 +34,29 @@ public class SecurityConfig {
         this.myBasicAuthenticationEntryPoint = basicEntryPoint;
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(cors -> cors.configurationSource(corsConfiguration()))
-            .csrf(csrf -> csrf.disable())
-            .formLogin(form -> form.disable())
-            .logout(logout -> logout
-                .logoutUrl(endpoint + "/logout")
-                .deleteCookies("ADVENTURER"))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
-                .requestMatchers(HttpMethod.GET, endpoint + "/event").permitAll()
-                .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, endpoint + "/event").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, endpoint + "/event").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, endpoint + "/event").hasRole("ADMIN")
-                .anyRequest().authenticated())
-            .userDetailsService(jpaUserDetailsService)
-            .httpBasic(basic -> basic.authenticationEntryPoint(myBasicAuthenticationEntryPoint))
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+                http
+                        .cors(cors -> cors.configurationSource(corsConfiguration()))
+                        .csrf(csrf -> csrf.disable())
+                        .formLogin(form -> form.disable())
+                        .logout(out -> out
+                                .logoutUrl(endpoint + "/logout")
+                                .deleteCookies("ADVENTURER"))
+                        .authorizeHttpRequests(auth -> auth
+                                //.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+                                .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
+                                .requestMatchers(HttpMethod.GET, endpoint + "/event/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("USER","ADMIN")
+                                .requestMatchers(HttpMethod.POST, endpoint + "/event").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, endpoint + "/event").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, endpoint + "/event").hasRole("ADMIN")
+                                .anyRequest().authenticated())
+                        .userDetailsService(jpaUserDetailsService)
+                        .httpBasic(basic -> basic.authenticationEntryPoint(myBasicAuthenticationEntryPoint))
+                        .sessionManagement(session -> session
+                                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         http.headers(headers -> headers
             .frameOptions(frame -> frame.sameOrigin()));
