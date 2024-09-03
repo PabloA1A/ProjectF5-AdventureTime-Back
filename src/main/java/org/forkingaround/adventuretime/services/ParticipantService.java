@@ -1,16 +1,21 @@
 package org.forkingaround.adventuretime.services;
 
+import org.springframework.security.core.Authentication;
+
 import org.forkingaround.adventuretime.dtos.ParticipantDto;
 import org.forkingaround.adventuretime.exceptions.ParticipantNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
 import org.forkingaround.adventuretime.models.Participant;
+import org.forkingaround.adventuretime.models.SecurityUser;
 import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.repositories.EventRepository;
 import org.forkingaround.adventuretime.repositories.ParticipantRepository;
 import org.forkingaround.adventuretime.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @Service
 public class ParticipantService {
 
@@ -29,6 +35,10 @@ public class ParticipantService {
 
     @Autowired
     private UserRepository userRepository;
+
+    // public ParticipantService(UserRepository userRepository) {
+    // this.userRepository = userRepository;
+    // }
 
     public ParticipantDto addParticipant(ParticipantDto participantDto) {
         Participant participant = new Participant();
@@ -63,7 +73,7 @@ public class ParticipantService {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (eventOptional.isPresent()) {
-            Event event = eventOptional.get()
+            Event event = eventOptional.get();
 
             if (event.getParticipantsCount() >= event.getMaxParticipants()) {
                 return false;
@@ -102,43 +112,40 @@ public class ParticipantService {
         participantRepository.delete(participant);
     }
 
-    public void unregisterFromEvent(Long eventId, Long userId) {  
-        
+    public void unregisterFromEvent(Long eventId, Long userId) {
+
         Long authenticatedUserId = getAuthenticatedUserId();
 
         if (!authenticatedUserId.equals(userId)) {
             throw new SecurityException("You can only unregister yourself from the event.");
         }
-            
+
         Participant participant = participantRepository.findByEventIdAndUserId(eventId, userId)
-                .orElseThrow(() -> new ParticipantNotFoundException("Participant not found for the event with ID: " + eventId + " and user ID: " + userId));
-    
-        
+                .orElseThrow(() -> new ParticipantNotFoundException(
+                        "Participant not found for the event with ID: " + eventId + " and user ID: " + userId));
+
         participantRepository.delete(participant);
     }
 
     private Long getAuthenticatedUserId() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    if (authentication != null && authentication.isAuthenticated()) {
-        Object principal = authentication.getPrincipal();
+        String username = authentication.getName();
 
-        if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            // Asumiendo que tu UserDetails tiene un método getId()
-            return ((MyUserDetails) userDetails).getId();  // Cambia MyUserDetails por tu implementación
-        } else if (principal instanceof String) {
-            // En caso de que el principal sea solo un nombre de usuario
-            String username = (String) principal;
-            // Busca el usuario en la base de datos usando el nombre de usuario y devuelve su ID
-            User user = userRepository.findByUsername(username);
+        if (authentication.getPrincipal() instanceof SecurityUser) {
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
             return user.getId();
+        } else if (authentication.getPrincipal() instanceof String) {
+
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"))
+                    .getId();
+        } else {
+            throw new RuntimeException("Unexpected principal type");
         }
-         //esto es para poder registrarse y borrarse solo a uno mismo
     }
-    
-    throw new SecurityException("User is not authenticated");
-}
 
     private ParticipantDto convertToDto(Participant participant) {
         return new ParticipantDto(
