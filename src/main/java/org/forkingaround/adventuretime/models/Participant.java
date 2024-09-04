@@ -20,6 +20,7 @@ public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "participant_id")
     public Long id;
 
     @Column(name = "joined_at", nullable = false)

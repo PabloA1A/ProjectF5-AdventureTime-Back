@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 
 @SuppressWarnings("unused")
+@Service
 public class EmailService {
     
     @Autowired
