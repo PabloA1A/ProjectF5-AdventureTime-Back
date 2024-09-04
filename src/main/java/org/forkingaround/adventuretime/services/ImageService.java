@@ -21,18 +21,18 @@ import java.util.UUID;
 public class ImageService {
 
     private String uploadFile(File file, String fileName) throws IOException {
-        BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName); // Nombre del bucket
+        BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName); 
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
 
-        // Cargar las credenciales desde el archivo JSON
-        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); // Cambia el nombre del archivo si es necesario
+        
+        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); 
         GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
-        // Subir el archivo al bucket
+       
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        // Crear la URL de descarga
+        
         String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/eventsforkingaround.appspot.com/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
@@ -51,12 +51,11 @@ public class ImageService {
 
     public String upload(MultipartFile multipartFile) {
         try {
-            String fileName = multipartFile.getOriginalFilename();                        // Obtener el nombre original del archivo
-            fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));  // Generar un nombre de archivo aleatorio
-
-            File file = this.convertToFile(multipartFile, fileName);                      // Convertir MultipartFile a File
-            String URL = this.uploadFile(file, fileName);                                 // Obtener la URL del archivo subido
-            file.delete();                                                                // Eliminar el archivo temporal
+            String fileName = multipartFile.getOriginalFilename();                        
+            fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));  
+            File file = this.convertToFile(multipartFile, fileName);                      
+            String URL = this.uploadFile(file, fileName);                                 
+            file.delete();                                                                
             return URL;
         } catch (Exception e) {
             e.printStackTrace();
