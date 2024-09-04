@@ -14,12 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@SuppressWarnings("unused")
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -47,8 +45,6 @@ public class SecurityConfig {
                                 .deleteCookies("ADVENTURER"))
                         .authorizeHttpRequests(auth -> auth
                                 //.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
-                                .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
-                                .requestMatchers(HttpMethod.GET, endpoint + "/event/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, endpoint + "/login").hasAnyRole("USER","ADMIN")
                                 .requestMatchers(HttpMethod.POST, endpoint + "/event").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, endpoint + "/event").hasRole("ADMIN")
@@ -57,6 +53,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, endpoint + "/participant/{eventId}/unregister").hasRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, endpoint + "/participant").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, endpoint + "/participant/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
+                                .requestMatchers(HttpMethod.GET, endpoint + "/event/**").permitAll()
         
                                 .anyRequest().authenticated())
                         .userDetailsService(jpaUserDetailsService)
