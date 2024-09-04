@@ -3,6 +3,10 @@ package org.forkingaround.adventuretime.controllers;
 import java.util.Optional;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
 import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
@@ -26,6 +30,13 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+
+    @GetMapping("/allhome")
+    public ResponseEntity<Page<EventDto>> getAllEvents(
+            @PageableDefault(size = 10, sort = "eventDateTime") Pageable pageable) {
+        Page<EventDto> events = eventService.getAllEventsHome(pageable);
+        return ResponseEntity.ok(events);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<EventDto>> getAllEvents() {

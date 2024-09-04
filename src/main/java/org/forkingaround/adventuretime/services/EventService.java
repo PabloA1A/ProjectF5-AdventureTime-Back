@@ -1,6 +1,8 @@
 package org.forkingaround.adventuretime.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
-import org.forkingaround.adventuretime.dtos.SubscribeDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
@@ -21,6 +22,32 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
+    public Page<EventDto> getAllEventsHome(Pageable pageable) {
+        return eventRepository.findAll(pageable)
+                .map(this::convertToDtoHome);
+    }
+    
+    private EventDto convertToDtoHome(Event event) {
+        List<Long> subscribeDto = event.getParticipants().stream()
+                .map(participant -> {
+                    User user = participant.getUser();
+                    return user != null ? user.getId() : null;
+                })
+                .collect(Collectors.toList());
+
+        return new EventDto(
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getImageUrl(),
+                event.getEventDateTime(),
+                event.getMaxParticipants(),
+                event.getIsAvailable(),
+                event.getIsFeatured(),
+                event.getParticipants().size(),
+                subscribeDto);
+    }
+    
     private EventDto convertToDto(Event event) {
 
         List<Long> SubscribeDto = event.getParticipants().stream()

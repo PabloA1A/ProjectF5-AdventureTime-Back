@@ -9,8 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
     List<Event> findByIsFeaturedTrue();
+
     @Query("SELECT p FROM Event e JOIN e.participants p WHERE e.id = :eventId")
-List<Participant> getParticipantsByEventId(@Param("eventId") Long eventId);
+    List<Participant> getParticipantsByEventId(@Param("eventId") Long eventId);
 }
-      
