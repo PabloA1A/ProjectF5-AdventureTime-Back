@@ -55,7 +55,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, endpoint + "/participant/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, endpoint + "/register").permitAll()
                                 .requestMatchers(HttpMethod.GET, endpoint + "/event/**").permitAll()
-        
                                 .anyRequest().authenticated())
                         .userDetailsService(jpaUserDetailsService)
                         .httpBasic(basic -> basic.authenticationEntryPoint(myBasicAuthenticationEntryPoint))

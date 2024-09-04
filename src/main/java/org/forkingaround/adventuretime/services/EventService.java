@@ -23,10 +23,10 @@ public class EventService {
 
     private EventDto convertToDto(Event event) {
 
-        List<SubscribeDto> SubscribeDto = event.getParticipants().stream()
+        List<Long> SubscribeDto = event.getParticipants().stream()
                 .map(participant -> {
                     User user = participant.getUser();
-                    return new SubscribeDto(participant.getId(), user != null ? user.getUsername() : null);
+                    return user != null ? user.getId() : null;
                 })
                 .collect(Collectors.toList());
 
