@@ -19,14 +19,12 @@ public class EventTest {
 
     @BeforeEach
     void setUp() {
-        // Create Participants
         participant1 = new Participant();
         participant1.setJoinedAt(LocalDateTime.now());
         
         participant2 = new Participant();
         participant2.setJoinedAt(LocalDateTime.now().plusHours(1));
 
-        // Create Event with Participants
         event = Event.builder()
                 .title("Sample Event")
                 .description("Event Description")
@@ -41,7 +39,6 @@ public class EventTest {
 
     @Test
     void testEventGettersAndSetters() {
-        // Test Getters
         assertThat(event.getTitle()).isEqualTo("Sample Event");
         assertThat(event.getDescription()).isEqualTo("Event Description");
         assertThat(event.getImageUrl()).isEqualTo("http://example.com/image.jpg");
@@ -50,13 +47,11 @@ public class EventTest {
         assertThat(event.getIsAvailable()).isTrue();
         assertThat(event.getIsFeatured()).isTrue();
         
-        // Test Participants
         List<Participant> participants = event.getParticipants();
         assertThat(participants).isNotNull();
         assertThat(participants).hasSize(2);
         assertThat(participants).contains(participant1, participant2);
         
-        // Test Participants Count
         assertThat(event.getParticipantsCount()).isEqualTo(2);
     }
 

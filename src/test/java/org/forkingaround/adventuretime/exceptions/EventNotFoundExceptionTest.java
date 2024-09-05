@@ -11,7 +11,6 @@ public class EventNotFoundExceptionTest {
         String message = "Event not found";
         EventNotFoundException exception = new EventNotFoundException(message);
 
-        // Verificar que el mensaje de la excepción es correcto
         assertEquals(message, exception.getMessage());
     }
 
@@ -21,10 +20,8 @@ public class EventNotFoundExceptionTest {
         Throwable cause = new RuntimeException("Root cause");
         EventNotFoundException exception = new EventNotFoundException(message, cause);
 
-        // Verificar que el mensaje de la excepción es correcto
         assertEquals(message, exception.getMessage());
 
-        // Verificar que la causa de la excepción es correcta
         assertEquals(cause, exception.getCause());
     }
 }
