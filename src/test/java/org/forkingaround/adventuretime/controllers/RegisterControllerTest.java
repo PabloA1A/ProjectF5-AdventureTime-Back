@@ -1,12 +1,6 @@
 package org.forkingaround.adventuretime.controllers;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Map;
-
-import org.forkingaround.adventuretime.dtos.UserDto;
+import org.forkingaround.adventuretime.dtos.RegisterDto;
 import org.forkingaround.adventuretime.models.User;
 import org.forkingaround.adventuretime.services.RegisterService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +10,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 public class RegisterControllerTest {
 
@@ -23,34 +22,34 @@ public class RegisterControllerTest {
     private RegisterService service;
 
     @InjectMocks
-    private RegisterController controller;
-
-    private UserDto userDto;
-    private User user;
+    private RegisterController registerController;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Inicialización de datos de prueba
-        userDto = new UserDto("username", "password");
-        user = new User("username", "password");
     }
 
     @Test
-    @SuppressWarnings("null")
-    void testRegister() {
-        when(service.save(userDto)).thenReturn(user);
+    public void testRegisterSuccess() {
+        // Arrange
+        RegisterDto registerDto = new RegisterDto();
+        registerDto.setUsername("testuser");
+        registerDto.setPassword("password123");
 
-        ResponseEntity<Map<String, String>> response = controller.register(userDto);
+        User user = new User();
+        user.setUsername("testuser");
 
-        assertThat(response.getStatusCode(), is(HttpStatus.ACCEPTED));
+        when(service.save(registerDto)).thenReturn(user);
 
-        Map<String, String> responseBody = response.getBody();
-        assertThat(responseBody, is(notNullValue()));
-        assertThat(responseBody.get("message"), is("Register"));
-        assertThat(responseBody.get("username"), is("username"));
+        Map<String, String> expectedResponse = new HashMap<>();
+        expectedResponse.put("message", "Register successful");
+        expectedResponse.put("username", "testuser");
 
-        verify(service).save(userDto);
+        // Act
+        ResponseEntity<Map<String, String>> response = registerController.register(registerDto);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
     }
 }
