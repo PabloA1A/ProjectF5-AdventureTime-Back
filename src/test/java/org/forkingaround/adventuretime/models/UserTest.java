@@ -1,85 +1,71 @@
 package org.forkingaround.adventuretime.models;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-public class UserTest {
+class UserTest {
 
-    private User user;
-    private Profile profile;
-    private Role role;
-    private Participant participant;
+    @Test
+    void testConstructorWithUsernameAndPassword() {
+        User user = new User("testUser", "testPassword");
+        assertEquals("testUser", user.getUsername());
+        assertEquals("testPassword", user.getPassword());
+        assertNull(user.getProfile());
+    }
 
-    @BeforeEach
-    void setUp() {
-        profile = new Profile();
-        role = new Role();
-        participant = new Participant();
-        user = new User("username", "password", profile);
+    @Test
+    void testConstructorWithUsernamePasswordAndProfile() {
+        Profile profile = new Profile();
+        User user = new User("testUser", "testPassword", profile);
+        assertEquals("testUser", user.getUsername());
+        assertEquals("testPassword", user.getPassword());
+        assertEquals(profile, user.getProfile());
+    }
+
+    @Test
+    void testSettersAndGetters() {
+        User user = new User();
+
+        user.setId(1L);
+        assertEquals(1L, user.getId());
+
+        user.setUsername("newUser");
+        assertEquals("newUser", user.getUsername());
+
+        user.setPassword("newPassword");
+        assertEquals("newPassword", user.getPassword());
+
+        Profile profile = new Profile();
+        user.setProfile(profile);
+        assertEquals(profile, user.getProfile());
+
+        Set<Role> roles = new HashSet<>();
+        Role role = Mockito.mock(Role.class);
+        roles.add(role);
+        user.setRoles(roles);
+        assertEquals(roles, user.getRoles());
+    }
+
+    @Test
+    void testProfileRelationship() {
+        Profile profile = Mockito.mock(Profile.class);
+        User user = new User();
+        user.setProfile(profile);
+        assertEquals(profile, user.getProfile());
+    }
+
+    @Test
+    void testAddRole() {
+        User user = new User();
+        Role role = Mockito.mock(Role.class);
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         user.setRoles(roles);
-        Set<Participant> participants = new HashSet<>();
-        participants.add(participant);
-        user.setParticipants(participants);
-    }
-
-    @Test
-    void testUserConstructor() {
-        User userWithParams = new User("testUser", "testPass", profile);
-        assertAll(
-                () -> assertThat(userWithParams.getUsername(), is("testUser")),
-                () -> assertThat(userWithParams.getPassword(), is("testPass")),
-                () -> assertThat(userWithParams.getProfile(), is(profile)));
-    }
-
-    @Test
-    void testUserBuilder() {
-        User userWithBuilder = User.builder()
-                .username("builderUser")
-                .password("builderPass")
-                .profile(profile)
-                .build();
-        assertAll(
-                () -> assertThat(userWithBuilder.getUsername(), is("builderUser")),
-                () -> assertThat(userWithBuilder.getPassword(), is("builderPass")),
-                () -> assertThat(userWithBuilder.getProfile(), is(profile)));
-    }
-
-    @Test
-    void testGettersAndSetters() {
-        assertAll(
-                () -> assertThat(user.getUsername(), is("username")),
-                () -> assertThat(user.getPassword(), is("password")),
-                () -> assertThat(user.getProfile(), is(profile)),
-                () -> assertThat(user.getRoles(), hasItem(role)),
-                () -> assertThat(user.getParticipants(), hasItem(participant)));
-
-        user.setUsername("newUsername");
-        user.setPassword("newPassword");
-        Profile newProfile = new Profile(); // Crear un nuevo objeto de perfil
-        user.setProfile(newProfile);
-
-        Set<Role> newRoles = new HashSet<>();
-        user.setRoles(newRoles);
-
-        Set<Participant> newParticipants = new HashSet<>();
-        user.setParticipants(newParticipants);
-
-        assertAll(
-                () -> assertThat(user.getUsername(), is("newUsername")),
-                () -> assertThat(user.getPassword(), is("newPassword")),
-                () -> assertThat(user.getProfile(), is(newProfile)),
-                () -> assertThat(user.getRoles(), is(empty())),
-                () -> assertThat(user.getParticipants(), is(empty())));
+        assertTrue(user.getRoles().contains(role));
     }
 }
