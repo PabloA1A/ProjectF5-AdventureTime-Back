@@ -6,6 +6,7 @@ import org.forkingaround.adventuretime.exceptions.ParticipantNotFoundException;
 import org.forkingaround.adventuretime.services.EmailService;
 import org.forkingaround.adventuretime.services.EventService;
 import org.forkingaround.adventuretime.services.ParticipantService;
+import org.forkingaround.adventuretime.services.ProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class ParticipantControllerTest {
@@ -32,17 +35,33 @@ class ParticipantControllerTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private ProfileService profileService;
+
     @InjectMocks
     private ParticipantController participantController;
+
+    private Long eventId;
+    private Long userId;
+    private EventDto eventDto;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        eventId = 1L;
+        userId = 1L;
+        eventDto = new EventDto(eventId, null, null, null, null, 0, null, null, 0, null);
+        eventDto.setId(eventId);
+        eventDto.setTitle("Test Event");
+        eventDto.setMaxParticipants(10);
+        eventDto.setParticipantsCount(5);
     }
 
     @Test
     void getAllParticipants_Success() {
-        List<ParticipantDto> participants = Arrays.asList(new ParticipantDto(null, null, null, null), new ParticipantDto(null, null, null, null));
+        List<ParticipantDto> participants = Arrays.asList(new ParticipantDto(null, null, null, null),
+                new ParticipantDto(null, null, null, null));
         when(participantService.getAllParticipants()).thenReturn(participants);
 
         ResponseEntity<List<ParticipantDto>> response = participantController.getAllParticipants();
@@ -84,22 +103,23 @@ class ParticipantControllerTest {
         assertNull(response.getBody());
     }
 
-    // @Test
-    // void joinEvent_Success() {
-    //     Long eventId = 1L;
-    //     Long userId = 1L;
+    @Test
+    void joinEvent_Success() {
+        when(participantService.joinEvent(eventId, userId)).thenReturn(true);
+        when(eventService.getEventById(eventId)).thenReturn(Optional.of(eventDto));
+        when(profileService.getEmailByUserId(userId)).thenReturn("user@example.com");
+        doNothing().when(emailService).sendEmail(anyString(), anyString(), anyString());
 
-    //     when(participantService.joinEvent(eventId, userId)).thenReturn(true);
+        ResponseEntity<String> response = participantController.joinEvent(eventId, userId);
 
-    //     EventDto eventDto = new EventDto(userId, null, null, null, null, 0, null, null, 0, null);
-    //     eventDto.setTitle("Sample Event");
-    //     when(eventService.getEventById(eventId)).thenReturn(Optional.of(eventDto));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Joined successfully", response.getBody());
 
-    //     ResponseEntity<String> response = participantController.joinEvent(eventId, userId);
-
-    //     assertEquals(HttpStatus.OK, response.getStatusCode());
-    //     assertEquals("Joined successfully", response.getBody());
-    // }
+        verify(participantService).joinEvent(eventId, userId);
+        verify(eventService).getEventById(eventId);
+        verify(profileService).getEmailByUserId(userId);
+        verify(emailService).sendEmail(eq("user@example.com"), anyString(), anyString());
+    }
 
     @Test
     void joinEvent_EventFull() {
@@ -149,7 +169,8 @@ class ParticipantControllerTest {
     void deleteParticipant_NotFound() throws ParticipantNotFoundException {
         Long eventId = 1L;
         Long participantId = 1L;
-        doThrow(new ParticipantNotFoundException("Not found")).when(participantService).deleteParticipant(eventId, participantId);
+        doThrow(new ParticipantNotFoundException("Not found")).when(participantService).deleteParticipant(eventId,
+                participantId);
 
         ResponseEntity<String> response = participantController.deleteParticipant(eventId, participantId);
 
@@ -173,7 +194,8 @@ class ParticipantControllerTest {
     void unregisterFromEvent_NotFound() throws ParticipantNotFoundException {
         Long eventId = 1L;
         Long userId = 1L;
-        doThrow(new ParticipantNotFoundException("Not found")).when(participantService).unregisterFromEvent(eventId, userId);
+        doThrow(new ParticipantNotFoundException("Not found")).when(participantService).unregisterFromEvent(eventId,
+                userId);
 
         ResponseEntity<String> response = participantController.unregisterFromEvent(eventId, userId);
 
