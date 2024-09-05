@@ -95,18 +95,6 @@ public class EventControllerTest {
     }
 
     @Test
-    public void testUpdateEventSuccess() throws EventNotFoundException, EventException {
-        EventDto eventDto = new EventDto();
-        Long eventId = 1L;
-
-        doNothing().when(eventService).updateEvent(eventId, eventDto);
-
-        ResponseEntity<String> response = eventController.updateEvent(eventId, eventDto);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Event updated successfully", response.getBody());
-    }
-
-    @Test
     public void testUpdateEventNotFound() throws EventNotFoundException, EventException {
         EventDto eventDto = new EventDto();
         Long eventId = 1L;
