@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class SubscribeDto {
-    private Long id;
-    private String username;
+    private Long register;
+    //private Long username;
 }
