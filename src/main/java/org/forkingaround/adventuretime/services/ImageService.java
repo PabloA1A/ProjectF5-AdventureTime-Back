@@ -15,23 +15,23 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Base64;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ImageService {
 
     private String uploadFile(File file, String fileName) throws IOException {
-        BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName); 
+        BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        
-        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); 
+
+        InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 
-       
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        
         String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/eventsforkingaround.appspot.com/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
@@ -50,15 +50,40 @@ public class ImageService {
 
     public String upload(MultipartFile multipartFile) {
         try {
-            String fileName = multipartFile.getOriginalFilename();                        
-            fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));  
-            File file = this.convertToFile(multipartFile, fileName);                      
-            String URL = this.uploadFile(file, fileName);                                 
-            file.delete();                                                                
+            String fileName = multipartFile.getOriginalFilename();
+            fileName = UUID.randomUUID().toString().concat(this.getExtension(fileName));
+            File file = this.convertToFile(multipartFile, fileName);
+            String URL = this.uploadFile(file, fileName);
+            file.delete();
             return URL;
         } catch (Exception e) {
             e.printStackTrace();
             return "Image couldn't upload, Something went wrong";
+        }
+    }
+
+    public Optional<String> uploadBase64(String fileEncoded) {
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(fileEncoded);
+            String fileName = UUID.randomUUID().toString();
+            BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName);
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
+
+            InputStream inputStream = ImageService.class.getClassLoader()
+                    .getResourceAsStream("firebase-private-key.json");
+            GoogleCredentials credentials;
+
+            credentials = GoogleCredentials.fromStream(inputStream);
+
+            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+
+            storage.create(blobInfo, decodedBytes);
+
+            String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/eventsforkingaround.appspot.com/o/%s?alt=media";
+            return Optional.of(String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
