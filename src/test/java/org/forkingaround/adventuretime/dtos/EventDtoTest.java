@@ -1,92 +1,118 @@
 package org.forkingaround.adventuretime.dtos;
 
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Arrays;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EventDtoTest {
 
     @Test
-    void testAllArgsConstructor() {
-        // Arrange
-        Long id = 1L;
-        String title = "Sample Event";
-        String description = "Event Description";
-        String imageUrl = "http://example.com/image.jpg";
-        LocalDateTime eventDateTime = LocalDateTime.now().plusDays(1);
-        int maxParticipants = 100;
-        Boolean isAvailable = true;
-        Boolean isFeatured = true;
-        int participantsCount = 10;
+    public void testConstructorAndGetters() {
+        LocalDateTime eventDateTime = LocalDateTime.of(2024, 9, 5, 15, 30);
+        EventDto eventDto = new EventDto(
+            1L,
+            "Test Event",
+            "This is a test event.",
+            "http://example.com/image.jpg",
+            eventDateTime,
+            100,
+            true,
+            false,
+            10,
+            Arrays.asList(1L, 2L, 3L)
+        );
 
-        // Act
-        EventDto eventDto = new EventDto(id, title, description, imageUrl, eventDateTime, maxParticipants, isAvailable, isFeatured, participantsCount);
-
-        // Assert
-        assertThat(eventDto.getId()).isEqualTo(id);
-        assertThat(eventDto.getTitle()).isEqualTo(title);
-        assertThat(eventDto.getDescription()).isEqualTo(description);
-        assertThat(eventDto.getImageUrl()).isEqualTo(imageUrl);
-        assertThat(eventDto.getEventDateTime()).isEqualTo(eventDateTime);
-        assertThat(eventDto.getMaxParticipants()).isEqualTo(maxParticipants);
-        assertThat(eventDto.getIsAvailable()).isEqualTo(isAvailable);
-        assertThat(eventDto.getIsFeatured()).isEqualTo(isFeatured);
-        assertThat(eventDto.getParticipantsCount()).isEqualTo(participantsCount);
+        assertEquals(1L, eventDto.getId());
+        assertEquals("Test Event", eventDto.getTitle());
+        assertEquals("This is a test event.", eventDto.getDescription());
+        assertEquals("http://example.com/image.jpg", eventDto.getImageUrl());
+        assertEquals(eventDateTime, eventDto.getEventDateTime());
+        assertEquals(100, eventDto.getMaxParticipants());
+        assertTrue(eventDto.getIsAvailable());
+        assertEquals(false, eventDto.getIsFeatured());
+        assertEquals(10, eventDto.getParticipantsCount());
+        assertEquals(Arrays.asList(1L, 2L, 3L), eventDto.getRegistered());
     }
 
     @Test
-    void testGettersAndSetters() {
-        // Arrange
-        Long id = 1L;
-        String title = "Sample Event";
-        String description = "Event Description";
-        String imageUrl = "http://example.com/image.jpg";
-        LocalDateTime eventDateTime = LocalDateTime.now().plusDays(1);
-        int maxParticipants = 100;
-        Boolean isAvailable = true;
-        Boolean isFeatured = true;
-        int participantsCount = 10;
+    public void testSetters() {
+        EventDto eventDto = new EventDto();
 
-        EventDto eventDto = new EventDto(id, title, description, imageUrl, eventDateTime, maxParticipants, isAvailable, isFeatured, participantsCount);
+        eventDto.setId(2L);
+        eventDto.setTitle("New Event");
+        eventDto.setDescription("This is a new event.");
+        eventDto.setImageUrl("http://example.com/newimage.jpg");
+        eventDto.setEventDateTime(LocalDateTime.of(2024, 10, 1, 12, 0));
+        eventDto.setMaxParticipants(200);
+        eventDto.setIsAvailable(false);
+        eventDto.setIsFeatured(true);
+        eventDto.setParticipantsCount(20);
+        eventDto.setRegistered(Arrays.asList(4L, 5L));
 
-        // Act & Assert
-        assertThat(eventDto.getId()).isEqualTo(id);
-        assertThat(eventDto.getTitle()).isEqualTo(title);
-        assertThat(eventDto.getDescription()).isEqualTo(description);
-        assertThat(eventDto.getImageUrl()).isEqualTo(imageUrl);
-        assertThat(eventDto.getEventDateTime()).isEqualTo(eventDateTime);
-        assertThat(eventDto.getMaxParticipants()).isEqualTo(maxParticipants);
-        assertThat(eventDto.getIsAvailable()).isEqualTo(isAvailable);
-        assertThat(eventDto.getIsFeatured()).isEqualTo(isFeatured);
-        assertThat(eventDto.getParticipantsCount()).isEqualTo(participantsCount);
+        assertEquals(2L, eventDto.getId());
+        assertEquals("New Event", eventDto.getTitle());
+        assertEquals("This is a new event.", eventDto.getDescription());
+        assertEquals("http://example.com/newimage.jpg", eventDto.getImageUrl());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 12, 0), eventDto.getEventDateTime());
+        assertEquals(200, eventDto.getMaxParticipants());
+        assertEquals(false, eventDto.getIsAvailable());
+        assertEquals(true, eventDto.getIsFeatured());
+        assertEquals(20, eventDto.getParticipantsCount());
+        assertEquals(Arrays.asList(4L, 5L), eventDto.getRegistered());
     }
 
     @Test
-    void testToString() {
-        // Arrange
-        LocalDateTime now = LocalDateTime.now();
-        EventDto eventDto = new EventDto(1L, "Sample Event", "Event Description", "http://example.com/image.jpg", now, 100, true, true, 10);
+    public void testEqualsAndHashCode() {
+        LocalDateTime eventDateTime = LocalDateTime.of(2024, 9, 5, 15, 30);
+        EventDto eventDto1 = new EventDto(
+            1L,
+            "Test Event",
+            "This is a test event.",
+            "http://example.com/image.jpg",
+            eventDateTime,
+            100,
+            true,
+            false,
+            10,
+            Arrays.asList(1L, 2L, 3L)
+        );
 
-        // Act
-        String toStringResult = eventDto.toString();
+        EventDto eventDto2 = new EventDto(
+            1L,
+            "Test Event",
+            "This is a test event.",
+            "http://example.com/image.jpg",
+            eventDateTime,
+            100,
+            true,
+            false,
+            10,
+            Arrays.asList(1L, 2L, 3L)
+        );
 
-        // Assert
-        assertThat(toStringResult).contains("EventDto(id=1, title=Sample Event, description=Event Description, imageUrl=http://example.com/image.jpg, eventDateTime=");
-        assertThat(toStringResult).contains(", maxParticipants=100, isAvailable=true, isFeatured=true, participantsCount=10)");
+        assertEquals(eventDto1, eventDto2);
+        assertEquals(eventDto1.hashCode(), eventDto2.hashCode());
     }
 
     @Test
-    void testEqualsAndHashCode() {
-        // Arrange
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        EventDto eventDto1 = new EventDto(1L, "Sample Event", "Event Description", "http://example.com/image.jpg", now, 100, true, true, 10);
-        EventDto eventDto2 = new EventDto(1L, "Sample Event", "Event Description", "http://example.com/image.jpg", now, 100, true, true, 10);
+    public void testToString() {
+        LocalDateTime eventDateTime = LocalDateTime.of(2024, 9, 5, 15, 30);
+        EventDto eventDto = new EventDto(
+            1L,
+            "Test Event",
+            "This is a test event.",
+            "http://example.com/image.jpg",
+            eventDateTime,
+            100,
+            true,
+            false,
+            10,
+            Arrays.asList(1L, 2L, 3L)
+        );
 
-        // Act & Assert
-        assertThat(eventDto1).isEqualTo(eventDto2);
-        assertThat(eventDto1.hashCode()).isEqualTo(eventDto2.hashCode());
+        String expectedString = "EventDto(id=1, title=Test Event, description=This is a test event., imageUrl=http://example.com/image.jpg, eventDateTime=2024-09-05T15:30, maxParticipants=100, isAvailable=true, isFeatured=false, participantsCount=10, registered=[1, 2, 3])";
+        assertEquals(expectedString, eventDto.toString());
     }
 }

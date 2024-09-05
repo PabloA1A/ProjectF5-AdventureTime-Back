@@ -1,13 +1,5 @@
 package org.forkingaround.adventuretime.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.List;
-
 import org.forkingaround.adventuretime.dtos.EventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
@@ -15,183 +7,179 @@ import org.forkingaround.adventuretime.models.Event;
 import org.forkingaround.adventuretime.services.EventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@ExtendWith(MockitoExtension.class)
-public class EventControllerTest {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-    @Mock
-    private EventService eventService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+public class EventControllerTest {
 
     @InjectMocks
     private EventController eventController;
 
-    private EventDto eventDto;
-    private Event event;
+    @Mock
+    private EventService eventService;
 
     @BeforeEach
-    void setUp() {
-        eventDto = new EventDto(
-            1L,
-            "Sample Event",
-            "This is a sample event.",
-            "http://example.com/sample.jpg",
-            LocalDateTime.now(),
-            100,
-            true,
-            false,
-            50
-        );
-
-        event = new Event();
-        event.setId(1L);
-        event.setTitle("Sample Event");
-        event.setDescription("This is a sample event.");
-        event.setImageUrl("http://example.com/sample.jpg");
-        event.setEventDateTime(LocalDateTime.now());
-        event.setMaxParticipants(100);
-        event.setIsAvailable(true);
-        event.setIsFeatured(false);
-        event.setParticipants(Arrays.asList());
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testGetAllEvents() {
-        List<EventDto> eventList = Arrays.asList(eventDto);
-        when(eventService.getAllEvents()).thenReturn(eventList);
+    public void testGetAllEventsHome() {
+        List<EventDto> eventDtoList = new ArrayList<>();
+        Page<EventDto> page = new PageImpl<>(eventDtoList);
+        Pageable pageable = Pageable.unpaged();
+
+        when(eventService.getAllEventsHome(pageable)).thenReturn(page);
+
+        ResponseEntity<Page<EventDto>> response = eventController.getAllEvents(pageable);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(page, response.getBody());
+    }
+
+    @Test
+    public void testGetAllEvents() {
+        List<EventDto> eventDtoList = new ArrayList<>();
+
+        when(eventService.getAllEvents()).thenReturn(eventDtoList);
 
         ResponseEntity<List<EventDto>> response = eventController.getAllEvents();
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(eventList, response.getBody());
-        verify(eventService).getAllEvents();
+        assertEquals(eventDtoList, response.getBody());
     }
 
     @Test
-    void testGetFeaturedEvents() {
-        List<EventDto> featuredEventList = Arrays.asList(eventDto);
-        when(eventService.getFeaturedEvents()).thenReturn(featuredEventList);
+    public void testGetFeaturedEvents() {
+        List<EventDto> featuredEvents = new ArrayList<>();
+
+        when(eventService.getFeaturedEvents()).thenReturn(featuredEvents);
 
         ResponseEntity<List<EventDto>> response = eventController.getFeaturedEvents();
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(featuredEventList, response.getBody());
-        verify(eventService).getFeaturedEvents();
+        assertEquals(featuredEvents, response.getBody());
     }
 
     @Test
-    void testGetEventByIdSuccess() {
-        when(eventService.getEventById(1L)).thenReturn(Optional.of(eventDto));
+    public void testAddEventSuccess() throws EventException {
+        EventDto eventDto = new EventDto();
+        Event event = new Event();
+        event.setId(1L);
 
-        ResponseEntity<?> response = eventController.getEventById(1L);
-        Optional<?> optionalEvent = Optional.of(eventDto);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(optionalEvent, response.getBody());
-        verify(eventService).getEventById(1L);
-    }
-
-    @Test
-    void testGetEventByIdNotFound() {
-        when(eventService.getEventById(2L)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = eventController.getEventById(2L);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(Optional.empty(), response.getBody());
-        verify(eventService).getEventById(2L);
-    }
-
-    @Test
-    void testAddEventSuccess() {
         when(eventService.addEvent(eventDto)).thenReturn(event);
 
         ResponseEntity<String> response = eventController.addEvent(eventDto);
-
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("Event added successfully with id: 1", response.getBody());
-        verify(eventService).addEvent(eventDto);
     }
 
     @Test
-    void testAddEventFailure() {
-        when(eventService.addEvent(eventDto)).thenThrow(new EventException("Invalid event data"));
+    public void testAddEventFailure() throws EventException {
+        EventDto eventDto = new EventDto();
+        when(eventService.addEvent(eventDto)).thenThrow(new EventException("Invalid data"));
 
         ResponseEntity<String> response = eventController.addEvent(eventDto);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid event data: Invalid event data", response.getBody());
-        verify(eventService).addEvent(eventDto);
+        assertEquals("Invalid event data: Invalid data", response.getBody());
     }
 
     @Test
-    void testUpdateEventSuccess() {
-        when(eventService.updateEvent(1L, eventDto)).thenReturn(event);
+    public void testUpdateEventSuccess() throws EventNotFoundException, EventException {
+        EventDto eventDto = new EventDto();
+        Long eventId = 1L;
 
-        ResponseEntity<String> response = eventController.updateEvent(1L, eventDto);
+        doNothing().when(eventService).updateEvent(eventId, eventDto);
 
+        ResponseEntity<String> response = eventController.updateEvent(eventId, eventDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Event updated successfully", response.getBody());
-        verify(eventService).updateEvent(1L, eventDto);
     }
 
     @Test
-    void testUpdateEventNotFound() {
-        doThrow(new EventNotFoundException("Event with id 1 not found")).when(eventService).updateEvent(1L, eventDto);
+    public void testUpdateEventNotFound() throws EventNotFoundException, EventException {
+        EventDto eventDto = new EventDto();
+        Long eventId = 1L;
+        doThrow(new EventNotFoundException("Event not found")).when(eventService).updateEvent(eventId, eventDto);
 
-        ResponseEntity<String> response = eventController.updateEvent(1L, eventDto);
-
+        ResponseEntity<String> response = eventController.updateEvent(eventId, eventDto);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Event not found: Event with id 1 not found", response.getBody());
-        verify(eventService).updateEvent(1L, eventDto);
+        assertEquals("Event not found: Event not found", response.getBody());
     }
 
     @Test
-    void testUpdateEventFailure() {
-        doThrow(new EventException("Invalid event data")).when(eventService).updateEvent(1L, eventDto);
+    public void testUpdateEventFailure() throws EventNotFoundException, EventException {
+        EventDto eventDto = new EventDto();
+        Long eventId = 1L;
+        doThrow(new EventException("Invalid data")).when(eventService).updateEvent(eventId, eventDto);
 
-        ResponseEntity<String> response = eventController.updateEvent(1L, eventDto);
-
+        ResponseEntity<String> response = eventController.updateEvent(eventId, eventDto);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid event data: Invalid event data", response.getBody());
-        verify(eventService).updateEvent(1L, eventDto);
+        assertEquals("Invalid event data: Invalid data", response.getBody());
     }
 
     @Test
-    void testDeleteEventSuccess() {
-        doNothing().when(eventService).deleteEvent(1L);
+    public void testDeleteEventSuccess() throws EventNotFoundException, EventException {
+        Long eventId = 1L;
+        doNothing().when(eventService).deleteEvent(eventId);
 
-        ResponseEntity<String> response = eventController.deleteEvent(1L);
-
+        ResponseEntity<String> response = eventController.deleteEvent(eventId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(null, response.getBody());
-        verify(eventService).deleteEvent(1L);
     }
 
     @Test
-    void testDeleteEventNotFound() {
-        doThrow(new EventNotFoundException("Event with id 11 not found")).when(eventService).deleteEvent(11L);
+    public void testDeleteEventNotFound() throws EventNotFoundException, EventException {
+        Long eventId = 1L;
+        doThrow(new EventNotFoundException("Event not found")).when(eventService).deleteEvent(eventId);
 
-        ResponseEntity<String> response = eventController.deleteEvent(11L);
-
+        ResponseEntity<String> response = eventController.deleteEvent(eventId);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Event not found: Event with id 11 not found", response.getBody());
-        verify(eventService).deleteEvent(11L);
+        assertEquals("Event not found: Event not found", response.getBody());
     }
 
     @Test
-    void testDeleteEventFailure() {
-        doThrow(new EventException("An error occurred while deleting the event")).when(eventService).deleteEvent(12L);
+    public void testDeleteEventFailure() throws EventNotFoundException, EventException {
+        Long eventId = 1L;
+        doThrow(new EventException("Error deleting event")).when(eventService).deleteEvent(eventId);
 
-        ResponseEntity<String> response = eventController.deleteEvent(12L);
-
+        ResponseEntity<String> response = eventController.deleteEvent(eventId);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("An error occurred while deleting the event: An error occurred while deleting the event", response.getBody());
-        verify(eventService).deleteEvent(12L);
+        assertEquals("An error occurred while deleting the event: Error deleting event", response.getBody());
+    }
+
+    @Test
+    public void testGetEventByIdFound() {
+        Long eventId = 1L;
+        EventDto eventDto = new EventDto();
+        Optional<EventDto> optionalEventDto = Optional.of(eventDto);
+
+        when(eventService.getEventById(eventId)).thenReturn(optionalEventDto);
+
+        ResponseEntity<Optional<EventDto>> response = eventController.getEventById(eventId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(optionalEventDto, response.getBody());
+    }
+
+    @Test
+    public void testGetEventByIdNotFound() {
+        Long eventId = 1L;
+        Optional<EventDto> optionalEventDto = Optional.empty();
+
+        when(eventService.getEventById(eventId)).thenReturn(optionalEventDto);
+
+        ResponseEntity<Optional<EventDto>> response = eventController.getEventById(eventId);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(optionalEventDto, response.getBody());
     }
 }
