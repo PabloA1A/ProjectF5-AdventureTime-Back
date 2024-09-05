@@ -34,6 +34,7 @@ public class JpaUserDetailsServiceTest {
         
         String username = "testuser";
         User user = new User(username, "password"); 
+        @SuppressWarnings("unused")
         SecurityUser securityUser = new SecurityUser(user); 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
