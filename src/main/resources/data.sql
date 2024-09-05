@@ -3,8 +3,8 @@ INSERT INTO roles (role_id, name) VALUES (default, 'ROLE_USER');
 INSERT INTO roles (role_id, name) VALUES (default, 'ROLE_ADMIN');
 
 -- Users
-INSERT INTO users (user_id, username, password) VALUES (default, 'pepe', '$2a$12$8LegtLQWe717tIPvZeivjuqKnaAs5.bm0Q05.5GrAmcKzXw2NjoUO');
-INSERT INTO users (user_id, username, password) VALUES (default, 'pepa', '$2a$12$8LegtLQWe717tIPvZeivjuqKnaAs5.bm0Q05.5GrAmcKzXw2NjoUO');
+INSERT INTO users (user_id, username, password) VALUES (default, 'user', '$2a$12$8LegtLQWe717tIPvZeivjuqKnaAs5.bm0Q05.5GrAmcKzXw2NjoUO');
+INSERT INTO users (user_id, username, password) VALUES (default, 'admin', '$2a$12$8LegtLQWe717tIPvZeivjuqKnaAs5.bm0Q05.5GrAmcKzXw2NjoUO');
 
 -- Roles_Users (Ensure role_id and user_id are correctly mapped)
 INSERT INTO roles_users (role_id, user_id) VALUES (1, 1);  -- Assign 'ROLE_USER' to user 'pepe'
@@ -12,8 +12,8 @@ INSERT INTO roles_users (role_id, user_id) VALUES (2, 2);  -- Assign 'ROLE_ADMIN
 
 -- Profiles
 INSERT INTO profiles (email, user_id) VALUES
-('pepe@mail.com', 1),
-('pepa@mail.com', 2);
+('user@mail.com', 1),
+('admin@mail.com', 2);
 
 -- EVENTS
 INSERT INTO events (event_id, title, description, image_url, event_datetime, max_participants, is_available, is_featured) VALUES
@@ -32,13 +32,3 @@ INSERT INTO events (event_id, title, description, image_url, event_datetime, max
 (default, 'Farmers Market', 'Shop for fresh, local produce and artisanal goods at our farmers market.', 'https://example.com/images/farmers_market.jpg', '2024-09-18 08:00:00', 50, true, false),
 (default, 'Book Fair', 'Find your next great read at our annual book fair.', 'https://example.com/images/book_fair.jpg', '2024-10-12 10:00:00', 100, true, true),
 (default, 'Dance Workshop', 'Learn new dance styles and techniques in our interactive workshop.', 'https://example.com/images/dance_workshop.jpg', '2024-11-05 16:00:00', 25, true, false);
-
--- PARTICIPANTS
-INSERT INTO participants (participant_id,joined_at, event_id, user_id) VALUES
-(default, '2024-08-20 10:00:00', 1, 1),
-(default, '2024-08-21 11:00:00', 1, 2),
-(default, '2024-08-22 12:00:00', 2, 1),
-(default, '2024-08-23 13:00:00', 3, 2),
-(default, '2024-08-24 14:00:00', 4, 1),
-(default, '2024-08-25 15:00:00', 2, 1),
-(default, '2024-08-26 16:00:00', 3, 2);
