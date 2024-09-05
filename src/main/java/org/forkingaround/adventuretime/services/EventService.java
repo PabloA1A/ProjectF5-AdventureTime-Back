@@ -26,7 +26,7 @@ public class EventService {
         return eventRepository.findAll(pageable)
                 .map(this::convertToDtoHome);
     }
-    
+
     private EventDto convertToDtoHome(Event event) {
         List<Long> subscribeDto = event.getParticipants().stream()
                 .map(participant -> {
@@ -39,7 +39,7 @@ public class EventService {
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
-                event.getImageUrl(),
+                Optional.of(event.getImageUrl()),
                 event.getEventDateTime(),
                 event.getMaxParticipants(),
                 event.getIsAvailable(),
@@ -47,7 +47,7 @@ public class EventService {
                 event.getParticipants().size(),
                 subscribeDto);
     }
-    
+
     private EventDto convertToDto(Event event) {
 
         List<Long> SubscribeDto = event.getParticipants().stream()
@@ -61,7 +61,7 @@ public class EventService {
                 event.getId(),
                 event.getTitle(),
                 event.getDescription(),
-                event.getImageUrl(),
+                Optional.of(event.getImageUrl()),
                 event.getEventDateTime(),
                 event.getMaxParticipants(),
                 event.getIsAvailable(),
@@ -95,7 +95,7 @@ public class EventService {
         Event newEvent = new Event();
         newEvent.setTitle(eventDto.getTitle());
         newEvent.setDescription(eventDto.getDescription());
-        newEvent.setImageUrl(eventDto.getImageUrl());
+        newEvent.setImageUrl(eventDto.getImageUrl().get());
         newEvent.setEventDateTime(eventDto.getEventDateTime());
         newEvent.setMaxParticipants(eventDto.getMaxParticipants());
         newEvent.setIsFeatured(eventDto.getIsFeatured());
@@ -110,7 +110,8 @@ public class EventService {
 
         event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
-        event.setImageUrl(eventDto.getImageUrl());
+        if (eventDto.getImageUrl().isPresent())
+            event.setImageUrl(eventDto.getImageUrl().get());
         event.setEventDateTime(eventDto.getEventDateTime());
         event.setMaxParticipants(eventDto.getMaxParticipants());
         event.setIsFeatured(eventDto.getIsFeatured());

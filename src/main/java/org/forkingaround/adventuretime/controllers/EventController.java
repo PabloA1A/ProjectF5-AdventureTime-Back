@@ -8,10 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 
 import org.forkingaround.adventuretime.dtos.EventDto;
+import org.forkingaround.adventuretime.dtos.NewEventDto;
 import org.forkingaround.adventuretime.exceptions.EventException;
 import org.forkingaround.adventuretime.exceptions.EventNotFoundException;
 import org.forkingaround.adventuretime.models.Event;
 import org.forkingaround.adventuretime.services.EventService;
+import org.forkingaround.adventuretime.services.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,8 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private ImageService imageService;
 
     @GetMapping("/allhome")
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -49,10 +53,17 @@ public class EventController {
         List<EventDto> featuredEvents = eventService.getFeaturedEvents();
         return ResponseEntity.ok(featuredEvents);
     }
-    
+
     @PostMapping("/add")
-    public ResponseEntity<String> addEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity<String> addEvent(@RequestBody NewEventDto newEventDto) {
         try {
+            String imageUrl = null;
+            if (newEventDto.getImageHash().isPresent()) {
+                imageUrl = imageService.uploadBase64(newEventDto.getImageHash().get()).get();
+            }
+            EventDto eventDto = new EventDto(newEventDto.getId(), newEventDto.getTitle(), newEventDto.getDescription(),
+                    Optional.of(imageUrl), newEventDto.getEventDateTime(), newEventDto.getMaxParticipants(),
+                    newEventDto.getIsAvailable(), newEventDto.getIsFeatured(), 0, null);
             Event addEvent = eventService.addEvent(eventDto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Event added successfully with id: " + addEvent.getId());
@@ -62,8 +73,16 @@ public class EventController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
+    public ResponseEntity<String> updateEvent(@PathVariable Long id, @RequestBody NewEventDto editEventDto) {
         try {
+            Optional<String> imageUrl = Optional.empty();
+            if (editEventDto.getImageHash().isPresent()) {
+                imageUrl = Optional.of(imageService.uploadBase64(editEventDto.getImageHash().get()).get());
+            }
+            EventDto eventDto = new EventDto(editEventDto.getId(), editEventDto.getTitle(),
+                    editEventDto.getDescription(),
+                    imageUrl, editEventDto.getEventDateTime(), editEventDto.getMaxParticipants(),
+                    editEventDto.getIsAvailable(), editEventDto.getIsFeatured(), 0, null);
             eventService.updateEvent(id, eventDto);
             return ResponseEntity.ok("Event updated successfully");
         } catch (EventNotFoundException e) {
