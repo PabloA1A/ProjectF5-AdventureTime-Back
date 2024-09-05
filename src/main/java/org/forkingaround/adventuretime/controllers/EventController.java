@@ -58,16 +58,16 @@ public class EventController {
     public ResponseEntity<String> addEvent(@RequestBody NewEventDto newEventDto) {
         try {
             String imageUrl = null;
-            if (newEventDto.getImageHash().isPresent()) {
-                imageUrl = imageService.uploadBase64(newEventDto.getImageHash().get()).get();
+            if (newEventDto.getImageHash() != null && newEventDto.getImageHash().isPresent()) {
+                imageUrl = imageService.uploadBase64(newEventDto.getImageHash().get()).orElse(null);
             }
             EventDto eventDto = new EventDto(newEventDto.getId(), newEventDto.getTitle(), newEventDto.getDescription(),
-                    Optional.of(imageUrl), newEventDto.getEventDateTime(), newEventDto.getMaxParticipants(),
+                    Optional.ofNullable(imageUrl), newEventDto.getEventDateTime(), newEventDto.getMaxParticipants(),
                     newEventDto.getIsAvailable(), newEventDto.getIsFeatured(), 0, null);
             Event addEvent = eventService.addEvent(eventDto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Event added successfully with id: " + addEvent.getId());
-        } catch (EventException e) {
+        } catch (EventException | NullPointerException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid event data: " + e.getMessage());
         }
     }

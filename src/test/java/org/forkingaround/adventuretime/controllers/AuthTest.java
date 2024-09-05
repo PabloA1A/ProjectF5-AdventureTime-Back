@@ -1,14 +1,18 @@
 package org.forkingaround.adventuretime.controllers;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -50,4 +54,24 @@ public class AuthTest {
                 .andExpect(status().isUnauthorized()); // 401 Unauthorized
     }
 
+    @Test
+    @WithMockUser(username = "pepe", roles = {"USER"})
+    void testUserAuthenticatedWithRoleUser() throws Exception {
+        mockMvc.perform(get("/api/v1/login"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Logged"))
+                .andExpect(jsonPath("$.username").value("pepe"))
+                .andExpect(jsonPath("$.roles").value("ROLE_USER"));
+    }
+
+    @Test
+    void testUserAuthenticatedWithCustomUser() throws Exception {
+        mockMvc.perform(get("/api/v1/login").with(user("pepa")
+                .password("password")
+                .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Logged"))
+                .andExpect(jsonPath("$.username").value("pepa"))
+                .andExpect(jsonPath("$.roles").value("ROLE_ADMIN"));
+    }
 }
