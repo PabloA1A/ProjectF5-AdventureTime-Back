@@ -22,12 +22,9 @@ Login
 - <p>GET localhost:8080/api/v1/login</p>
 
 
-## Database Normalization Diagram
-
-
 ## UML Diagram
 
-![Imagen de WhatsApp 2024-09-05 a las 14 53 23_86e7f818](https://github.com/user-attachments/assets/292d81b9-6e16-4b4c-8fe7-1bfc89b435b3)
+![Captura](https://github.com/user-attachments/assets/c9ef2023-47bd-408e-a3f4-bcce8e22e2a5)
 
 
 ## Tools
