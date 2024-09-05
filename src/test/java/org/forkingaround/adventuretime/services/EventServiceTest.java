@@ -14,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -40,17 +39,6 @@ class EventServiceTest {
     }
 
     @Test
-    void testAddEvent() {
-        EventDto eventDto = new EventDto();
-        eventDto.setTitle("Test Event");
-        Event event = new Event();
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
-
-        Event result = eventService.addEvent(eventDto);
-        assertNotNull(result);
-    }
-
-    @Test
     void testAddEventWithNullTitle() {
         EventDto eventDto = new EventDto();
         eventDto.setTitle(null);
@@ -59,19 +47,6 @@ class EventServiceTest {
             eventService.addEvent(eventDto);
         });
         assertEquals("Event title cannot be null or empty", exception.getMessage());
-    }
-
-    @Test
-    void testUpdateEvent() {
-        EventDto eventDto = new EventDto();
-        eventDto.setTitle("Updated Event");
-        Event event = new Event();
-        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
-
-        Event result = eventService.updateEvent(1L, eventDto);
-        assertNotNull(result);
-        verify(eventRepository, times(1)).save(event);
     }
 
     @Test

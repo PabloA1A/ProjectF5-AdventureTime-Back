@@ -31,7 +31,6 @@ public class RegisterControllerTest {
 
     @Test
     public void testRegisterSuccess() {
-        // Arrange
         RegisterDto registerDto = new RegisterDto();
         registerDto.setUsername("testuser");
         registerDto.setPassword("password123");
@@ -45,10 +44,8 @@ public class RegisterControllerTest {
         expectedResponse.put("message", "Register successful");
         expectedResponse.put("username", "testuser");
 
-        // Act
         ResponseEntity<Map<String, String>> response = registerController.register(registerDto);
 
-        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
     }

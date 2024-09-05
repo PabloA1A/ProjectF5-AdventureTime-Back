@@ -44,14 +44,14 @@ public class AuthTest {
     @Test
     void testLogout() throws Exception {
         mockMvc.perform(get("/api/v1/logout"))
-                .andExpect(status().isNoContent()); // 204 No Content
+                .andExpect(status().isNoContent());
     }
 
     @Test
     void testUserUnauthenticated() throws Exception {
         mockMvc.perform(get("/api/v1/login"))
                 .andExpect(unauthenticated())
-                .andExpect(status().isUnauthorized()); // 401 Unauthorized
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
