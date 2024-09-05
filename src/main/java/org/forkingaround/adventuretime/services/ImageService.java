@@ -23,7 +23,6 @@ public class ImageService {
     private String uploadFile(File file, String fileName) throws IOException {
         BlobId blobId = BlobId.of("eventsforkingaround.appspot.com", fileName); 
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-
         
         InputStream inputStream = ImageService.class.getClassLoader().getResourceAsStream("firebase-private-key.json"); 
         GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
