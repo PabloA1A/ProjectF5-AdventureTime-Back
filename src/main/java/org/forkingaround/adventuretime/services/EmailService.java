@@ -19,11 +19,10 @@ public class EmailService {
             message.setSubject(subject);
             message.setText(text);
             mailSender.send(message);
-            System.out.println("Email enviado correctamente");
+            System.out.println("Mail sent successfully");
         } catch (MailException e) {
-            // Captura la excepción y muestra detalles del error
             e.printStackTrace();
-            System.err.println("Error enviando email: " + e.getMessage());
+            System.err.println("Error sending mail: " + e.getMessage());
         }
     }
 }
