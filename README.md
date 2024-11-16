@@ -3,6 +3,12 @@
 ## Descripción
 Adventure Time es una aplicación web desarrollada con Spring Boot que permite gestionar eventos online como talleres, masterclass y webinars. La plataforma ofrece funcionalidades tanto para usuarios regulares como para administradores.
 
+![Login](Login.png)
+![Home](Home.png)
+![Event](Event.png)
+![Dashboard](Dashboard.png)
+![Dashboard](Dashboard2.png)
+
 ## Características principales 🚀
 
 ### Usuarios
@@ -124,3 +130,5 @@ src/
 3. Commit cambios (git commit -m 'Add: nueva característica')
 4. Push a la rama (git push origin feature/AmazingFeature)
 5. Abrir Pull Request
+
+¡Gracias por usar Adventure Time!
